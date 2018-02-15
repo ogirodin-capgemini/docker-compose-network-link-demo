@@ -2,7 +2,9 @@
 
 if  wget $1 -q -O - | grep -q "Hello world!"
   then
-    echo "matched"
+    echo "Matched";
+    exit 1;
   else
-    echo "not mathched"
+    echo "Not matched";
+    exit 0;
 fi

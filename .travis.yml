@@ -1,0 +1,58 @@
+language: bash
+env:
+  - DOCKER_COMPOSE_VERSION=1.18.0
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose pull
+
+jobs:
+  include:
+    - stage: test docker version file 3
+      script:
+        - docker-compose up -d
+        # Self check
+        - docker-compose exec container_1 sh -c "./check/check_matched.sh container_1"
+        # Check other one
+        - docker-compose exec container_1 sh -c "./check/check_matched.sh container_2"
+        # Fail check
+        - docker-compose exec container_1 sh -c "./check/check_not_matched.sh container_3"
+        # Self check
+        - docker-compose exec container_2 sh -c "./check/check_matched.sh container_2"
+        # Check other one
+        - docker-compose exec container_2 sh -c "./check/check_matched.sh container_1"
+        # Fail check
+        - docker-compose exec container_2 sh -c "./check/check_not_matched.sh container_3"
+    - stage: test docker version file 2
+      script:
+        - docker-compose -f docker-compose-v2.yml up -d #Docker version file 2
+        # Self check
+        - docker-compose exec container_1 sh -c "./check/check_matched.sh container_1"
+        # Check other one
+        - docker-compose exec container_1 sh -c "./check/check_matched.sh container_2"
+        # Fail check
+        - docker-compose exec container_1 sh -c "./check/check_not_matched.sh container_3"
+        # Self check
+        - docker-compose exec container_2 sh -c "./check/check_matched.sh container_2"
+        # Check other one
+        - docker-compose exec container_2 sh -c "./check/check_matched.sh container_1"
+        # Fail check
+        - docker-compose exec container_2 sh -c "./check/check_not_matched.sh container_3"
+    - stage: test docker version file 1
+      script:
+        - docker-compose -f docker-compose-v1.yml up -d #Docker version file 1
+        # Self check
+        - docker-compose exec container_1 sh -c "./check/check_not_matched.sh container_1"
+        # Check other one
+        - docker-compose exec container_1 sh -c "./check/check_not_matched.sh container_2"
+        # Fail check
+        - docker-compose exec container_1 sh -c "./check/check_not_matched.sh container_3"
+        # Self check
+        - docker-compose exec container_2 sh -c "./check/check_not_matched.sh container_2"
+        # Check other one
+        - docker-compose exec container_2 sh -c "./check/check_not_matched.sh container_1"
+        # Fail check
+        - docker-compose exec container_2 sh -c "./check/check_not_matched.sh container_3"

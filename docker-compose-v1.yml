@@ -1,0 +1,8 @@
+container_1:
+  image: tutum/hello-world
+  volumes:
+    - ./check:/check
+container_2:
+  image: tutum/hello-world
+  volumes:
+    - ./check:/check
