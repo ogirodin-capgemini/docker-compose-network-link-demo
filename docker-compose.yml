@@ -1,0 +1,10 @@
+version: '3'
+services:
+  container_1:
+    image: tutum/hello-world
+    volumes:
+      - ./check.sh:/check.sh
+  container_2:
+    image: tutum/hello-world
+    volumes:
+      - ./check.sh:/check.sh
